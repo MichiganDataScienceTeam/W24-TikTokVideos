@@ -1,0 +1,14 @@
+Create a virtual environment in your folder with python3 -m venv env
+Activate the virtual environment with source env/bin/activate. 
+You need to activate the virtual environment every time you come back to work on the tutorials! 
+If this is done correctly, you should see (env) at the left end of your terminal.
+
+$ python3 -m venv env 
+$ source env/bin/activate
+
+When you are done working for the day, you can deactivate the virtual environment by running deactivate in the terminal. 
+
+$ deactivate
+
+To open Jupyter Notebook, run jupyter notebook in the terminal:
+$ jupyter notebook
