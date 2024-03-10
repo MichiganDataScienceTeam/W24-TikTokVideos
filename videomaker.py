@@ -1,8 +1,12 @@
 import click
+import praw
 import shutil
 from pytube import YouTube
 from moviepy.editor import *
 #
+# client ID: hfs2HBUHyxqvKhgZGMBfuQ
+# client sectrt: upIiQlIX9rNlXIohlw7NEsEt3KYElQ
+#python videomaker.py --videos 1 --subreddit askReddit
 
 @click.command()
 @click.option(
@@ -18,7 +22,8 @@ from moviepy.editor import *
 def main(videos: int, subreddit: str):
     """Automatically generate videos from Reddit posts."""
     print(f"Generating {videos} videos from r/{subreddit}.")
-    downloadVideos()
+    #downloadVideos()
+    downloadReddit(subreddit)
 
 def downloadVideos():
     #yt = YouTube('https://www.youtube.com/watch?v=Q5KtBKk4hC0')
@@ -30,7 +35,43 @@ def downloadVideos():
     video = VideoFileClip(str).subclip(1622, 1682) # from 27:02 to 28:02
     video.write_videofile("videos/background_edited.mp4",fps=25) #was a .webm
 
-   
+def downloadReddit(subredditStr : str):
+    client_id = "hfs2HBUHyxqvKhgZGMBfuQ"
+    client_secret = "upIiQlIX9rNlXIohlw7NEsEt3KYElQ"
+    user_agent = "TikTok generated videos - u/Nearby-Counter-5848"
+    
+    # reddit read only login
+    reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent,
+    )
+
+    # loop through the posts
+    #for submission in reddit.subreddit("Python").hot(limit=10):
+        #print(submission.title)
+
+    subreddit = reddit.subreddit(subredditStr)
+    #print(subreddit.display_name)
+    #print(subreddit.title)
+    #print(subreddit.description)
+
+    postList = []
+    top_level_comments = []
+    for submission in subreddit.hot(limit=5):
+        postList.append(submission)
+        submission.comment_sort = "best"
+        #print(submission.title)
+        top_level_comments.append(list(submission.comments))
+    
+    
+
+    for j in range(5):
+        print(postList[j].title)
+        for i in range(5):
+            print("Comment: #" + str(i+1))
+            print(top_level_comments[j][i].body)
+            print("-----------------------------------")
 
 if __name__ == "__main__":
     main()
