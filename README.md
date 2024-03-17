@@ -15,7 +15,7 @@ git branch <Your Team Name>
 ```
 - Setup Virtual Environment
 ```bash
-python3 -m venv env
+
 
 source env/bin/activate #you will need to run this command everytime you start a new terminal session
 
