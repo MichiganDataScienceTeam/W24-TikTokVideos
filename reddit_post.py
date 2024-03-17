@@ -10,20 +10,26 @@ reddit = praw.Reddit(
 #     print(submission.title)
 
 engine = pyttsx3.init()
-engine.setProperty('rate', 80)
+engine.setProperty('rate', 150)
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-subreddit = reddit.subreddit("AmItheAsshole")
+#engine.setProperty('voice', voices[0].id)
+#engine.setProperty('voice', 'en_GB')
+subreddit = reddit.subreddit("Showerthoughts")
+
+# Print available voices
 
 print(subreddit.display_name)
 # Output: redditdev
 #print(subreddit.title)
 # Output: reddit development
 #print(subreddit.description)
-# Output: a subreddit for discussion 
+# Output: a subreddit for discussion
+first_iteration = True
 
 for submission in subreddit.hot(limit=10):
-    print(submission.title)
+    if first_iteration:
+        first_iteration = False
+        continue
     # Output: the submission's title
     #print(submission.score)
     # Output: the submission's score
@@ -31,18 +37,21 @@ for submission in subreddit.hot(limit=10):
     # Output: the submission's ID
     #print(submission.url)
     #top_level_comments = list(submission.comments)
-    print(submission.author.name)
+    
     #print(top_level_comments)
 
     # engine.say(submission.selftext)
     # engine.runAndWait()
     print("-"*150)
-    # #for comment in submission.comments.list():
-    # print(submission.comments.body)
+    print(submission.author.name)   
+    print(submission.title)
     # # Output: the URL the submi
-    engine.say(submission.selftext)
+    #engine.say(submission.selftext)
+    engine.say(submission.title)
+    print(submission.selftext)
     engine.runAndWait()
 
 
 
 
+    
