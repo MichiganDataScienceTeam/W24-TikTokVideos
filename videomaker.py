@@ -3,6 +3,8 @@ import praw
 import shutil
 from pytube import YouTube
 from moviepy.editor import *
+import pyttsx3
+from gtts import gTTS
 #
 # client ID: hfs2HBUHyxqvKhgZGMBfuQ
 # client sectrt: upIiQlIX9rNlXIohlw7NEsEt3KYElQ
@@ -15,7 +17,7 @@ from moviepy.editor import *
 @click.option(
     "--subreddit",
     "subreddit",
-    default="AskReddit",
+    default="AmItheAsshole", #default="AskReddit"
     help="Subreddit to get videos from.",
     type=str,
 )
@@ -26,6 +28,7 @@ def main(videos: int, subreddit: str):
     downloadReddit(subreddit)
 
 def downloadVideos():
+    print('Downloading video')
     #yt = YouTube('https://www.youtube.com/watch?v=Q5KtBKk4hC0')
     # video name - Subway Surfers - First 30 Minutes Gameplay (Vertical Video).mp4
     yt = YouTube('https://www.youtube.com/watch?v=Q5KtBKk4hC0')
@@ -46,6 +49,7 @@ def downloadReddit(subredditStr : str):
         client_secret=client_secret,
         user_agent=user_agent,
     )
+    print('Downloading reddit posts')
 
     # loop through the posts
     #for submission in reddit.subreddit("Python").hot(limit=10):
@@ -66,12 +70,27 @@ def downloadReddit(subredditStr : str):
     
     
 
-    for j in range(5):
-        print(postList[j].title)
-        for i in range(5):
-            print("Comment: #" + str(i+1))
-            print(top_level_comments[j][i].body)
-            print("-----------------------------------")
+    #for j in range(5):
+        #print(postList[j].title)
+        #for i in range(5):
+         #   print("Comment: #" + str(i+1))
+          #  print(top_level_comments[j][i].body)
+           # print("-----------------------------------")
+    titleAndText = postList[4].title + postList[4].selftext
+    createAudio(titleAndText, 'audio.mp3')
+
+
+def createAudio(text : str, audioFileName : str):
+    print('Creating TTS audio.')
+    #BELOW IS USING PYTTSX3
+    engine = pyttsx3.init()
+    engine.save_to_file(text, audioFileName)
+    engine.runAndWait()
+
+    
+
+    #print(text)
+    #print(audioFileName)
 
 if __name__ == "__main__":
     main()
