@@ -54,10 +54,10 @@ def readComments(url):
     str = ""
     for i in posts.index:
         str += posts['body'][i]
-    # print(str)
     str = re.sub(r'[^A-Za-z0-9 ]+', '', str)
-    read(str)
-    # print("passed this line")
+    print(posts['body'][0])
+    print(submission)
+    # read(str)
     
 
 link = input("Enter the reddit post URL: ")
