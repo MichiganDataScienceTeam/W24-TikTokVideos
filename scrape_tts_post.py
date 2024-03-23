@@ -5,9 +5,9 @@ import re
 from gtts import gTTS
 
 
-def read(post):
+def read(post, index):
     tts = gTTS(post)
-    tts.save('test.mp3')
+    tts.save('test' + str(index) + '.mp3')
 
 def read_post():
 
@@ -60,8 +60,14 @@ def read_post():
     
     # Saving the data in a pandas dataframe
     top_posts = pd.DataFrame(posts_dict)
-    # print(top_posts["Post Text"][0])
-    str = re.sub(r'[^A-Za-z0-9 ]+', '', top_posts["Post Text"][0])
-    read(str)
+    # print(top_posts["Post URL"][0])
+    # str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][2])
+    # read(str)
+    # print(str)
+
+    for i in range(3):
+        str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][i])
+        read(str, i)
+
 
 read_post()

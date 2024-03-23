@@ -21,6 +21,7 @@ venv3/
 .ropeproject/
 .vscode/
 .idea
+.mp3
 
 # macOS system files
 *.DS_Store
