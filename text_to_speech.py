@@ -1,4 +1,4 @@
-import pyttsx3
+# import pyttsx3
 import pandas as pd
 import praw
 from praw.models import MoreComments
@@ -8,11 +8,11 @@ from gtts import gTTS
 
 def read(post):
     # engine = pyttsx3.init()
-    engine = pyttsx3.init(driverName=None, debug=True)
-    engine.save_to_file(post , 'output.mp3')
+    # engine = pyttsx3.init(driverName=None, debug=True)
+    # engine.save_to_file(post , 'output.mp3')
     # print("hello")
     # engine.say("I will speak this text")
-    engine.runAndWait()
+    # engine.runAndWait()
     tts = gTTS(post)
     tts.save('test.mp3')
 
