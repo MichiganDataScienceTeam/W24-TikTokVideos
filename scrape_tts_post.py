@@ -60,11 +60,8 @@ def read_post():
     
     # Saving the data in a pandas dataframe
     top_posts = pd.DataFrame(posts_dict)
-    # print(top_posts["Post URL"][0])
-    # str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][2])
-    # read(str)
-    # print(str)
 
+    # read the first _ posts from top_posts and save into separate mp3's
     for i in range(3):
         str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][i])
         read(str, i)
