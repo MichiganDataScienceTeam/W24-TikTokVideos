@@ -63,15 +63,10 @@ def read_post():
     top_posts = pd.DataFrame(posts_dict)
 
     # read the first _ posts from top_posts and save into separate mp3's
-    for i in range(1):
-        # print(top_posts["Post Text"][i])
+    for i in range(3):
         str = clean(top_posts["Post Text"][i], no_emoji = True)
-        # str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][i])
-        # str = str.encode("utf-8").decode("ascii", "ignore")
-        # print(posts_dict["Post URL"][i])
-        # print("line")
-        print(str)
-        # read(str, i)
+        # print(str)
+        read(str, i)
 
 
 read_post()
