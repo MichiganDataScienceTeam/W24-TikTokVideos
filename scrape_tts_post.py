@@ -64,6 +64,8 @@ def read_post():
     # read the first _ posts from top_posts and save into separate mp3's
     for i in range(3):
         str = re.sub(r'[^A-Za-z0-9 \n]+', '', top_posts["Post Text"][i])
+        print(posts_dict["Post URL"][i])
+        print(str)
         read(str, i)
 
 
