@@ -5,6 +5,8 @@ from pytube import YouTube
 from moviepy.editor import *
 import pyttsx3
 from gtts import gTTS
+from moviepy.video.io import ffmpeg_writer
+
 #
 # client ID: hfs2HBUHyxqvKhgZGMBfuQ
 # client sectrt: upIiQlIX9rNlXIohlw7NEsEt3KYElQ
@@ -26,17 +28,24 @@ def main(videos: int, subreddit: str):
     print(f"Generating {videos} videos from r/{subreddit}.")
     #downloadVideos()
     downloadReddit(subreddit)
+    
+
 
 def downloadVideos():
+    # Subway Surfer: https://www.youtube.com/watch?v=Q5KtBKk4hC0
+    # Minecraft https://www.youtube.com/watch?v=u7kdVe8q5zs
+    # Car https://www.youtube.com/watch?v=VS3D8bgYhf4
+    # Cake https://www.youtube.com/watch?v=88cgUkqH_x4
+    print("Choose video option:")
+    print("1: SubwaySurfer  2: Minecraft Parkour  3: GTA CAR   4: Cake Cutting")
+
     print('Downloading video')
-    #yt = YouTube('https://www.youtube.com/watch?v=Q5KtBKk4hC0')
-    # video name - Subway Surfers - First 30 Minutes Gameplay (Vertical Video).mp4
-    yt = YouTube('https://www.youtube.com/watch?v=Q5KtBKk4hC0')
-    str = yt.streams[0].title + ".mp4"
-    yt.streams.filter(res="720p").first().download(output_path = 'videos')
-    #video = VideoFileClip("Subway Surfers - First 30 Minutes Gameplay (Vertical Video).mp4").subclip(1622, 1682) # from 27:02 to 28:02
-    video = VideoFileClip(str).subclip(1622, 1682) # from 27:02 to 28:02
-    video.write_videofile("videos/background_edited.mp4",fps=25) #was a .webm
+    yt = YouTube('https://www.youtube.com/watch?v=88cgUkqH_x4')
+    st = yt.streams[0].title + ".mp4"
+    yt.streams.filter(res="720p").first().download(output_path = 'bgVideos')# (output_path = 'videos')
+    
+
+    
 
 def downloadReddit(subredditStr : str):
     client_id = "hfs2HBUHyxqvKhgZGMBfuQ"
@@ -82,15 +91,35 @@ def downloadReddit(subredditStr : str):
 
 def createAudio(text : str, audioFileName : str):
     print('Creating TTS audio.')
-    #BELOW IS USING PYTTSX3
     engine = pyttsx3.init()
     engine.save_to_file(text, audioFileName)
     engine.runAndWait()
 
+    combineComponents(audioFileName, "background_edited.mp4")
+
+
+def combineComponents(audioFileName : str, videoFileName : str):
+    '''videoclip = VideoFileClip(videoFileName)
+    audioclip = AudioFileClip(audioFileName)
+
+    #new_audioclip = CompositeAudioClip([audioclip])
+    videoclip.audio = audioclip
+    videoclip.write_videofile("finalVids/" + "finalVid.mp4")'''
+
+    # Load the video file
+    video_clip = VideoFileClip(videoFileName)
     
 
-    #print(text)
-    #print(audioFileName)
+    # Load the background audio
+    background_audio = AudioFileClip(audioFileName)
+
+    video_clip = video_clip.set_duration(background_audio.duration)
+
+    # Set the background audio to the video clip
+    new_video_clip = video_clip.set_audio(background_audio)
+
+    # Write the combined video with the background audio
+    new_video_clip.write_videofile("output_video_with_audio.mp4", codec="libx264", audio_codec="aac")
 
 if __name__ == "__main__":
     main()
