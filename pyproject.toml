@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "w24-tiktokvideos"
+version = "0.1.0"
+description = "\"An automated brain rot TikTok video creator.\""
+authors = ["Jakal02 <gitcontribs@eligrubbs.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^2.6.4"
+pydantic-settings = "^2.2.1"
+praw = "^7.7.1"
+pyttsx3 = "^2.90"
+moviepy = "^1.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

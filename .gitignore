@@ -1,0 +1,36 @@
+# Python
+*.pyc
+__pycache__/
+*.egg-info*
+dist/
+env/
+venv/
+venv3/
+.venv/
+.pytest_cache
+
+
+# Virtual Machines
+.vagrant/
+
+# Text editors and IDEs
+*~
+*.swp
+.vscode
+.ropeproject/
+.vscode/
+.idea
+
+# macOS system files
+*.DS_Store
+
+# Google Drive and Dropbox
+Icon
+.dropbox*
+
+# Videos
+videos/
+*.mp4
+*.mp3
+
+.env
