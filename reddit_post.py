@@ -2,12 +2,12 @@ import praw
 import pyttsx3
 from gtts import gTTS
 
-
+from secrets import client_id, client_secret, user_agent
 from io import BytesIO
 reddit = praw.Reddit(
-    client_id="-e_5SNLpeJsBl8yVe-fxtA",
-    client_secret="Ub_dCex2QTb9LSrWtPa5r9BWKAnvMA",
-    user_agent="SubstantialYak6282",
+    client_id=client_id,
+    client_secret=client_secret,
+    user_agent=user_agent,
 )
 #engine = pyttsx3.init(driverName='nsss')
 # for submission in reddit.subreddit("cats").hot(limit=10):
