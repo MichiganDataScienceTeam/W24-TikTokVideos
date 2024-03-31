@@ -4,6 +4,7 @@ import pandas as pd
 import re
 from gtts import gTTS
 from cleantext import clean
+from reddit_secrets import client_id, password, client_secret, redirect_uri, user_agent
 
 
 def read(post, index):
@@ -13,11 +14,11 @@ def read(post, index):
 def read_post():
 
     reddit_read_only = praw.Reddit(
-            client_id="p-0Rg9Wj6VPI3d-VTepKaw",
-            password = 'qcshH3akuFv@yVbx', 
-            client_secret="NXrxt3AzjouqlVVG6keHxaVJyBJ1dQ",
-            redirect_uri="http://localhost:8080",
-            user_agent="amelia2004w",
+            client_id=client_id,
+            password = password, 
+            client_secret=client_secret,
+            redirect_uri=redirect_uri,
+            user_agent=user_agent,
         )
     
     
