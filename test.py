@@ -12,8 +12,8 @@ reddit = praw.Reddit(
 
 # url = "https://www.reddit.com/r/AmItheAsshole/comments/1bgctcv/aita_for_asking_my_fianc%C3%A9_to_tell_my_mil_i_dont/"
 for submission in reddit.subreddit("AmItheAsshole").hot(limit=2):
-    hello = submission.selftext
+    text = submission.selftext
 
-tts = gTTS(hello)
-print(hello)
+tts = gTTS(text, lang = 'en')
+print(text)
 tts.save('hello.mp3')
