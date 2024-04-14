@@ -24,10 +24,17 @@ from moviepy.video.io import ffmpeg_writer
     type=str,
 )
 def main(videos: int, subreddit: str):
+    videos = input("How many videos would you like:  ")
+    if (videos == ""):
+        videos = 1
+    subreddit = input("Which subreddit would you like to use:  ")
+    if (subreddit == ""):
+        subreddit = "AmITheAsshole"
     """Automatically generate videos from Reddit posts."""
     print(f"Generating {videos} videos from r/{subreddit}.")
     #downloadVideos()
-    downloadReddit(subreddit)
+    videosInt = int(videos)
+    downloadReddit(subreddit, videosInt)
     
 
 
@@ -40,14 +47,14 @@ def downloadVideos():
     print("1: SubwaySurfer  2: Minecraft Parkour  3: GTA CAR   4: Cake Cutting")
 
     print('Downloading video')
-    yt = YouTube('https://www.youtube.com/watch?v=88cgUkqH_x4')
+    yt = YouTube('https://www.youtube.com/watch?v=yCI_iK3THF8')
     st = yt.streams[0].title + ".mp4"
     yt.streams.filter(res="720p").first().download(output_path = 'bgVideos')# (output_path = 'videos')
     
 
     
 
-def downloadReddit(subredditStr : str):
+def downloadReddit(subredditStr : str, videos : int):
     client_id = "hfs2HBUHyxqvKhgZGMBfuQ"
     client_secret = "upIiQlIX9rNlXIohlw7NEsEt3KYElQ"
     user_agent = "TikTok generated videos - u/Nearby-Counter-5848"
@@ -71,7 +78,7 @@ def downloadReddit(subredditStr : str):
 
     postList = []
     top_level_comments = []
-    for submission in subreddit.hot(limit=5):
+    for submission in subreddit.top(limit=videos):
         postList.append(submission)
         submission.comment_sort = "best"
         #print(submission.title)
@@ -85,20 +92,40 @@ def downloadReddit(subredditStr : str):
          #   print("Comment: #" + str(i+1))
           #  print(top_level_comments[j][i].body)
            # print("-----------------------------------")
-    titleAndText = postList[4].title + postList[4].selftext
-    createAudio(titleAndText, 'audio.mp3')
+       
+    for submission in postList:
+        title_full = submission.title
+        title = "finalVids/" + title_full[:30] + ".mp4"
+   
+        titleAndText = submission.title + submission.selftext
+        createAudio(titleAndText, 'audio.mp3', title)
 
 
-def createAudio(text : str, audioFileName : str):
+def createAudio(text : str, audioFileName : str, title : str):
     print('Creating TTS audio.')
     engine = pyttsx3.init()
     engine.save_to_file(text, audioFileName)
     engine.runAndWait()
 
-    combineComponents(audioFileName, "background_edited.mp4")
+    print("0: Subway Surfers")
+    print("1: Minecraft Parkour")
+    print("2: Cake cutting")
+    print("3: GTA Ramp")
+    inputNum = input("Which background video would you like to use: ")
+    
+    if(inputNum == "0" or inputNum == ""):
+        combineComponents(audioFileName, "bgVideos/SubwaySurfer.mp4", title)
+    elif(inputNum == "1"):
+        combineComponents(audioFileName, "bgVideos/MinecraftParkour.mp4", title)
+    elif(inputNum == "2"):
+        combineComponents(audioFileName, "bgVideos/CakeCut.mp4", title)
+    elif(inputNum == "3"):
+        combineComponents(audioFileName, "bgVideos/gtamegaramp.mp4", title)
+    else:
+        print("Error: incorrect input provided")
 
 
-def combineComponents(audioFileName : str, videoFileName : str):
+def combineComponents(audioFileName : str, videoFileName : str, title : str):
     '''videoclip = VideoFileClip(videoFileName)
     audioclip = AudioFileClip(audioFileName)
 
@@ -119,8 +146,17 @@ def combineComponents(audioFileName : str, videoFileName : str):
     new_video_clip = video_clip.set_audio(background_audio)
 
     # Write the combined video with the background audio
-    new_video_clip.write_videofile("output_video_with_audio.mp4", codec="libx264", audio_codec="aac")
+    new_video_clip.write_videofile(title, codec="libx264", audio_codec="aac")
+    print("Created video called " + title)
+    if os.path.exists("audio.mp3"):
+    
+        os.remove("audio.mp3")
 
 if __name__ == "__main__":
     main()
 
+
+#Fix GTA Ramp video
+
+#Google TTS
+#Subtitles?
