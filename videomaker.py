@@ -6,6 +6,8 @@ from moviepy.editor import *
 import pyttsx3
 from gtts import gTTS
 from moviepy.video.io import ffmpeg_writer
+from google.cloud import texttospeech
+
 
 #
 # client ID: hfs2HBUHyxqvKhgZGMBfuQ
@@ -101,11 +103,40 @@ def downloadReddit(subredditStr : str, videos : int):
         createAudio(titleAndText, 'audio.mp3', title)
 
 
-def createAudio(text : str, audioFileName : str, title : str):
+def createAudio(bodyText : str, audioFileName : str, title : str):
     print('Creating TTS audio.')
-    engine = pyttsx3.init()
-    engine.save_to_file(text, audioFileName)
-    engine.runAndWait()
+    #engine = pyttsx3.init()
+    #engine.save_to_file(bodyText, audioFileName)
+    #engine.runAndWait()
+
+        # Instantiates a client
+    client = texttospeech.TextToSpeechClient()
+
+    # Set the text input to be synthesized
+    synthesis_input = texttospeech.SynthesisInput(text=bodyText)
+
+    # Build the voice request, select the language code ("en-US") and the ssml
+    # voice gender ("neutral")
+    voice = texttospeech.VoiceSelectionParams(
+        language_code="en-US", name = "en-US-Standard-B"
+    )
+
+    # Select the type of audio file you want returned
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    # Perform the text-to-speech request on the text input with the selected
+    # voice parameters and audio file type
+    response = client.synthesize_speech(
+        input=synthesis_input, voice=voice, audio_config=audio_config
+    )
+
+    # The response's audio_content is binary.
+    with open(audioFileName, "wb") as out:
+        # Write the response to the output file.
+        out.write(response.audio_content)
+        print('Audio content written to file' + audioFileName)
 
     print("0: Subway Surfers")
     print("1: Minecraft Parkour")
@@ -156,7 +187,6 @@ if __name__ == "__main__":
     main()
 
 
-#Fix GTA Ramp video
 
 #Google TTS
 #Subtitles?
