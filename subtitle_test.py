@@ -2,9 +2,6 @@ from moviepy.editor import *
 import assemblyai as aai
 from PIL import Image
 
-# import moviepy.config as conf  
-# conf.change_settings({"IMAGEMAGICK_BINARY": "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"})
-
 # If the API key is not set as an environment variable named
 # ASSEMBLYAI_API_KEY, you can also set it like this:
 aai.settings.api_key = "5dd9e6ecb8f1476b804c9c0d62cacc30"
@@ -16,16 +13,14 @@ with open("subtitle_example.srt", "w") as f:
     f.write(srt)
 from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
-generator = lambda txt: TextClip(txt, font='Georgia-Regular', fontsize=40, color='white')
+generator = lambda txt: TextClip(txt, font='Arial', fontsize=100, color='white', method= "caption")
 vertical_offset = 100
 sub = SubtitlesClip("subtitle_example.srt", generator)
 
-sub = sub.set_position((0,0.8), relative=True)
+sub = sub.set_position((0.3,0.3), relative=True)
 
 myvideo = VideoFileClip("minecraft_edited2.mp4")
-# myvideo_resized = myvideo.resize((1080, 1920))
-# final = CompositeVideoClip([myvideo, sub])
-# final.write_videofile("final_resized.mp4", fps=myvideo.fps)
+
 
 
 
