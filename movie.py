@@ -12,3 +12,6 @@ def videomaker():
         videoclip.write_videofile("minecraft_edited" + str(i) + ".mp4")
 
 videomaker()
+
+
+
