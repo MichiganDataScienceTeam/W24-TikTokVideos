@@ -1,3 +1,16 @@
+backgrounds/
+audio/
+cache/
+screenshot/
+temp/
+out/
+fonts/
+
+*.mp4
+*.mp3
+
+client_secrets.json
+
 # Python
 *.pyc
 __pycache__/
