@@ -1,20 +1,16 @@
 import json
 import praw
 import os
-import re
-from unidecode import unidecode
+from videomaker.utils.sanitize import sanitize_text
 from praw.models import MoreComments
-import pathlib
-import html
 from videomaker.utils.tts import text_to_speach
 from videomaker.utils.screenshot import screenshot
 from videomaker.types.audio import Audio
 from videomaker.types.comment import Comment
 from videomaker.types.video import Video
 from moviepy.editor import *
-import random
-from typing import List
-from copy import deepcopy
+
+from moviepy.video.fx.resize import resize
 
 credentials = "client_secrets.json"
 SAMPLE = 1
@@ -60,7 +56,7 @@ def main():
             if input("Use post in video? (y/n): ") == "n":
                 break
 
-            screenshot(video.url, False, video.fullname + ".png")
+            screenshot(video.url, False, video.fullname + ".png", creds)
 
             if os.path.exists("screenshot/" + video.fullname + ".png"):
                 video.screen_shot = "screenshot/" + video.fullname + ".png"
@@ -73,11 +69,12 @@ def main():
             for comment in submission.comments:
                 if isinstance(comment, MoreComments):
                     continue
-                print(f"Comment: {comment.body}")
+                cleaned = sanitize_text(comment.body)
+                print(f"Comment: {cleaned}")
                 include = input("Include in video? (y/n): ")
                 if include == "y":
                     comment = Comment(
-                        comment.body,
+                        cleaned,
                         comment.author,
                     )
                     comment.audio = text_to_speach(
@@ -100,32 +97,32 @@ def main():
 if __name__ == "__main__":
     # main()
     video = Video(
-        "What's the grossest thing your partner does but you accept?",
+        "What crazy stuff happened in the year 2001 that got overshadowed by 9/11?",
         "url",
         "author",
-        "t3_1bzisls",
+        "bet",
     )
-    with open("audio/egguchom.wav.json") as file:
+    with open("audio/NightNo423.wav.json") as file:
         timestamps = json.load(file)
 
     video.intro_audio = Audio(
-        "audio/egguchom.wav", timestamps, AudioFileClip("audio/egguchom.wav")
+        "audio/NightNo423.wav", timestamps, AudioFileClip("audio/NightNo423.wav")
     )
-    video.screen_shot = "screenshot/screenshot.png"
+    video.screen_shot = "screenshot/t3_1dcy3pi.png"
 
     video.comments.append(
         Comment(
-            "Enterprise Rent-A-Car buys their cars straight from the manufacturers at a price lower than dealerships get. After they rent them for a year, they sell them to the public at a price higher than they originally paid.",
+            "American Airlines Flight 587 An Airbus A-300 crashed in Queens, NY two months after 9/11. It was the second-deadliest aviation accident in US history, and not well remembered.",
             "IsNoHeroes94",
         )
     )
 
     video.comments[0].audio = Audio(
-        "audio/1bfblldw0rx4me.wav",
-        json.load(open("audio/1bfblldw0rx4me.wav.json")),
-        AudioFileClip("audio/1bfblldw0rx4me.wav"),
+        "audio/t3_1dcy3piCheesy_Discharge.wav",
+        json.load(open("audio/t3_1dcy3piCheesy_Discharge.wav.json")),
+        AudioFileClip("audio/t3_1dcy3piCheesy_Discharge.wav"),
     )
 
-    video.comments.append(video.comments[0])
+    # video.comments.append(video.comments[0])
 
     video.edit_video()

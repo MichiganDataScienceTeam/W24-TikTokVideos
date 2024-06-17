@@ -11,9 +11,14 @@ import os
 from videomaker.types.audio import Audio
 from videomaker.types.comment import Comment
 import random
+import numpy as np
 
 VIDEO_GAP = 1
 font_path = os.path.join(os.getcwd(), "fonts", "Roboto", "Roboto-Bold.ttf")
+# font_path = os.path.join(
+#     os.getcwd(), "fonts", "Burbank Big Condensed", "burbankbigcondensed_black.otf"
+# )
+FONT_SIZE = 50
 
 
 class Video:
@@ -64,6 +69,12 @@ class Video:
 
     def edit_video(self):
 
+        def elastic_resize(t):
+            """
+            Simulates an elastic easing in and out effect for resizing.
+            """
+            return min(1, 200 * (t - 0.075) ** 3 + 1)
+
         video_length = self.video_length()
         self.get_background_video()
 
@@ -87,7 +98,7 @@ class Video:
             .set_pos(("center", "center"))
         )
 
-        image = image.resize((700, image.h / image.w * 700))
+        image = image.resize((700, image.h / image.w * 700)).resize(elastic_resize)
         intro = CompositeVideoClip([intro_segment, image])
 
         segments = [intro]
@@ -99,50 +110,46 @@ class Video:
             word_segments = comment.word_segments()
             prev_timestamp = 0
             subtitle_clips = []
-            # print("Comment", comment.body)
-            # print(len(timestamps), len(word_segments))
 
+            subtitles = []
             for index, timestamp in enumerate(timestamps):
-                # print(
-                #     timestamp,
-                #     word_segments[index],
-                # )
+
                 caption_text_stroke = (
                     TextClip(
                         word_segments[index],
-                        stroke_width=20,
+                        stroke_width=14,
                         stroke_color="black",
-                        fontsize=74,
+                        fontsize=FONT_SIZE,
                         color="white",
                         font=font_path,
+                        method="label",
                         size=self.background_video.size,
-                        method="caption",
                     )
-                    .set_duration(timestamp - prev_timestamp)
                     .set_position("center")
+                    .set_start(prev_timestamp)
+                    .set_end(timestamp)
+                    .resize(elastic_resize)
                 )
 
                 caption_text = (
                     TextClip(
                         word_segments[index],
-                        fontsize=74,
+                        fontsize=FONT_SIZE,
                         color="white",
                         font=font_path,
+                        method="label",
                         size=self.background_video.size,
-                        method="caption",
                     )
-                    .set_duration(timestamp - prev_timestamp)
                     .set_position("center")
+                    .set_start(prev_timestamp)
+                    .set_end(timestamp)
+                    .resize(elastic_resize)
                 )
 
-                subtitle_clips.append(
-                    CompositeVideoClip(
-                        [caption_text_stroke, caption_text],
-                    )
-                )
+                subtitles.append(caption_text_stroke)
+                subtitles.append(caption_text)
+
                 prev_timestamp = timestamp
-
-            subtitles = concatenate_videoclips(subtitle_clips)
 
             segment = CompositeVideoClip(
                 [
@@ -152,17 +159,14 @@ class Video:
                         + comment.audio.audio_object.duration
                         + VIDEO_GAP,
                     ),
-                    subtitles,
+                    *subtitles,
                 ]
             ).set_audio(comment.audio.audio_object)
 
-            # subtitles.set_fps(24).write_videofile("test.mp4", codec="libx264")
-            # break
             segments.append(segment)
             offset += comment.audio.audio_object.duration + VIDEO_GAP
 
         final_video = concatenate_videoclips(segments)
-        # print(final_self.duration, video_length, abs(video_length - final_video.duration))
         if abs(video_length - final_video.duration) < 1:
             final_video.write_videofile(self.fullname + ".mp4", codec="libx264")
             pass

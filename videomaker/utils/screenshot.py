@@ -9,11 +9,14 @@ DEVICE_SCALE_FACTOR = 2
 
 
 def screenshot(url: str, nsfw: bool, filename: str, credentials: dict):
-    print("Capture Screenshot at:")
-    print(f"https://publish.reddit.com/embed?url={url}?snippet=")
-    print(f"Save to: screenshot/{filename}")
+    # print("Capture Screenshot at:")
+    # print(f"https://publish.reddit.com/embed?url={url}?snippet=")
+    # print(f"Save to: screenshot/{filename}")
+    if os.path.exists("screenshot/" + filename):
+        print("Screenshot already exists.")
+        return
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
 
         if os.path.exists("state.json"):
             context = browser.new_context(
