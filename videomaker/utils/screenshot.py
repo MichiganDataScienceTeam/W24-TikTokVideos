@@ -3,47 +3,48 @@ from playwright.sync_api import ViewportSize, sync_playwright
 from PIL import Image, ImageDraw
 import time
 import os
+from videomaker.utils.console import print_step, print_substep
+from videomaker.config import config, creds
 
-VIEWPORT = {"width": 2560, "height": 1440}
-DEVICE_SCALE_FACTOR = 2
+VIEWPORT = {
+    "width": config["screenshot"]["viewport_width"],
+    "height": config["screenshot"]["viewport_height"],
+}
 
 
-def screenshot(url: str, nsfw: bool, filename: str, credentials: dict):
-    # print("Capture Screenshot at:")
-    # print(f"https://publish.reddit.com/embed?url={url}?snippet=")
-    # print(f"Save to: screenshot/{filename}")
+def screenshot(url: str, nsfw: bool, filename: str):
+    print_step("Capturing screenshot...")
+
     if os.path.exists("screenshot/" + filename):
-        print("Screenshot already exists.")
+        print_substep("Using cached screenshot...")
         return
+
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=config["screenshot"]["headless"])
 
         if os.path.exists("state.json"):
             context = browser.new_context(
                 storage_state="state.json",
                 viewport=VIEWPORT,
-                device_scale_factor=DEVICE_SCALE_FACTOR,
+                device_scale_factor=config["screenshot"]["device_scale_factor"],
             )
         else:
             context = browser.new_context(
                 locale="en-us",
                 viewport=VIEWPORT,
-                device_scale_factor=DEVICE_SCALE_FACTOR,
+                device_scale_factor=config["screenshot"]["device_scale_factor"],
             )
             with open("cookies.json") as file:
                 cookies = json.load(file)
                 context.add_cookies(cookies)
-            login(context, credentials)
+            login(context)
 
         page = context.new_page()
         page.goto(f"https://publish.reddit.com/embed?url={url}?snippet=", timeout=0)
-        # page.set_viewport_size(ViewportSize(width=W, height=H))
+
         page.wait_for_load_state()
 
         iframe = page.frame_locator("iFrame")
-        if iframe is None:
-            print("Iframe not found")
-            return
 
         time.sleep(5)
 
@@ -51,30 +52,24 @@ def screenshot(url: str, nsfw: bool, filename: str, credentials: dict):
 
         if expand_button.is_visible():
             expand_button.click()
-            print("Clicked the 'Read more' button.")
-        else:
-            print("The 'Read more' button was not found or not visible.")
 
         nsfw_button = iframe.locator('button:has-text("View")')
 
         if nsfw_button.is_visible():
             nsfw_button.click()
-            print("Clicked the 'View' button.")
-        else:
-            print("The 'View' button was not found or not visible.")
 
         page.locator("iframe").screenshot(path="temp/" + filename)
         round_corners("temp/" + filename, "screenshot/" + filename)
 
 
-def login(context, credentials: dict):
+def login(context):
     page = context.new_page()
     page.goto("https://www.reddit.com/login", timeout=0)
     page.set_viewport_size(ViewportSize(width=700, height=700))
     page.wait_for_load_state()
 
-    page.locator("input#login-username").fill(credentials["reddit_username"])
-    page.locator("input#login-password").fill(credentials["reddit_password"])
+    page.locator("input#login-username").fill(creds["reddit_username"])
+    page.locator("input#login-password").fill(creds["reddit_password"])
     page.get_by_role("button", name="Log In").click()
 
     login_error_div = page.locator(".AnimatedForm__errorMessage").first

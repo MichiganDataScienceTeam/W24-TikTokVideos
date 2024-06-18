@@ -6,6 +6,9 @@ temp/
 out/
 fonts/
 
+client_secrets.toml
+state.json
+
 *.mp4
 *.mp3
 

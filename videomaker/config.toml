@@ -1,0 +1,23 @@
+[reddit]
+subreddit = "AskReddit"
+time_filter = "month"   # ["all", "day", "hour", "month", "week", "year"]
+
+[video]
+target_length = 60
+clip_gap = 1
+font_path = "fonts/Roboto/Roboto-Bold.ttf"
+font_size = 50
+stroke_width = 14
+stroke_color = "#121212"
+text_color = "#e5e5e5"
+background_video = "backgrounds/resize-TTdtMqKajws.mp4"
+
+[screenshot]
+viewport_width = 2560
+viewport_height = 1440
+device_scale_factor = 2
+headless = false
+
+[tts]
+google_voice_type = "en-US-Neural2-D"
+max_words_per_line = 25

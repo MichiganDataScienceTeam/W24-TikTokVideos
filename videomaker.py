@@ -1,4 +1,3 @@
-import json
 import praw
 import os
 from videomaker.utils.sanitize import sanitize_text
@@ -9,29 +8,16 @@ from videomaker.types.audio import Audio
 from videomaker.types.comment import Comment
 from videomaker.types.video import Video
 from moviepy.editor import *
-
-from moviepy.video.fx.resize import resize
+from videomaker.config import config, creds
+from videomaker.utils.console import *
+import json
 
 credentials = "client_secrets.json"
 SAMPLE = 1
-TIME_FILTERS = ["all", "day", "hour", "month", "week", "year"]
-
-
-with open(credentials) as f:
-    creds = json.load(f)
 
 
 def main():
     """Automatically generate videos from Reddit posts."""
-    # subreddit = input("Enter the subreddit: ")
-    # time_filter = int(
-    #     input(
-    #         "Enter the time filter:\n 1. all\n 2. day\n 3. hour\n 4. month\n 5. week\n 6. year\n"
-    #     )
-    # )
-
-    subreddit = "AskReddit"
-    time_filter = 5
 
     reddit = praw.Reddit(
         client_id=creds["client_id"],
@@ -40,26 +26,25 @@ def main():
         redirect_uri=creds["redirect_uri"],
         refresh_token=creds["refresh_token"],
     )
-    submissions = reddit.subreddit(subreddit).top(
-        limit=SAMPLE, time_filter=TIME_FILTERS[time_filter - 1]
+    submissions = reddit.subreddit(config["reddit"]["subreddit"]).top(
+        limit=SAMPLE, time_filter=config["reddit"]["time_filter"]
     )
 
     while True:
         for index, submission in enumerate(submissions):
-            print(f"Post {index + 1}: {submission.title} {submission.fullname}")
+            print_markdown(submission.title)
             video = Video(
                 submission.title,
                 submission.url,
                 submission.author.name,
                 submission.fullname,
             )
-            if input("Use post in video? (y/n): ") == "n":
+
+            if not yes_no_prompt("Use post in video?"):
                 break
 
-            screenshot(video.url, False, video.fullname + ".png", creds)
-
-            if os.path.exists("screenshot/" + video.fullname + ".png"):
-                video.screen_shot = "screenshot/" + video.fullname + ".png"
+            screenshot(video.url, False, video.fullname + ".png")
+            video.screen_shot = "screenshot/" + video.fullname + ".png"
 
             video.intro_audio = text_to_speach(
                 "<speak>" + video.title + "</speak>",
@@ -70,9 +55,9 @@ def main():
                 if isinstance(comment, MoreComments):
                     continue
                 cleaned = sanitize_text(comment.body)
-                print(f"Comment: {cleaned}")
-                include = input("Include in video? (y/n): ")
-                if include == "y":
+                print_markdown(f"### Comment\n {cleaned}")
+
+                if yes_no_prompt("Include in video?"):
                     comment = Comment(
                         cleaned,
                         comment.author,
@@ -82,14 +67,19 @@ def main():
                         "audio/" + video.fullname + comment.author.name + ".wav",
                     )
                     video.comments.append(comment)
-                print(f"Video length: {video.video_length()}s")
-                if input("Continue? (y/n): ") == "n":
-                    video.edit_video()
+                print_step(f"Video length: {video.video_length()}s")
+
+                if video.video_length() > config["video"]["target_length"]:
+                    print_step("Target length reached.")
+                    break
+                if yes_no_prompt("Done with video?"):
                     break
 
-        submissions = reddit.subreddit(subreddit).top(
+        video.edit_video()
+
+        submissions = reddit.subreddit(config["reddit"]["subreddit"]).top(
             limit=SAMPLE,
-            time_filter=TIME_FILTERS[time_filter - 1],
+            time_filter=config["reddit"]["time_filter"],
             params={"after": video.fullname},
         )
 

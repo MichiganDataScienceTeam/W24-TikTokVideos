@@ -1,8 +1,7 @@
 from videomaker.types.audio import Audio
 import textwrap
 import re
-
-WRAP = 25
+from videomaker.config import config
 
 
 class Comment:
@@ -18,7 +17,7 @@ class Comment:
     def word_segments(self):
         return textwrap.fill(
             re.sub(r"([.!?])", r"\1\n", self.body),
-            width=WRAP,
+            width=config["tts"]["max_words_per_line"],
             replace_whitespace=False,
         ).split("\n")
 

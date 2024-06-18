@@ -3,22 +3,23 @@ import os
 import json
 from moviepy.editor import AudioFileClip
 from videomaker.types.audio import Audio
-
-GOOGLE_VOICE_TYPE = "en-US-Neural2-D"
+from videomaker.config import config
+from videomaker.utils.console import print_step, print_substep
 
 
 def text_to_speach(ssml: str, filename: str, speaking_rate=1.25, pitch=-8) -> Audio:
+    print_step("Generating audio...")
     if os.path.exists(filename) and os.path.exists(filename + ".json"):
-        print("Cached audio")
+        print_substep("Using cached audio...")
         with open(filename + ".json") as file:
             timestamps = json.load(file)
         return Audio(
             file=filename, timestamps=timestamps, audio_object=AudioFileClip(filename)
         )
-    language_code = "-".join(GOOGLE_VOICE_TYPE.split("-")[:2])
+    language_code = "-".join(config["tts"]["google_voice_type"].split("-")[:2])
     text_input = tts.SynthesisInput(ssml=ssml)
     voice_params = tts.VoiceSelectionParams(
-        language_code=language_code, name=GOOGLE_VOICE_TYPE
+        language_code=language_code, name=config["tts"]["google_voice_type"]
     )
     audio_config = tts.AudioConfig(
         audio_encoding=tts.AudioEncoding.LINEAR16,
@@ -27,9 +28,7 @@ def text_to_speach(ssml: str, filename: str, speaking_rate=1.25, pitch=-8) -> Au
     )
 
     client = tts.TextToSpeechClient()
-    # print(filename)
-    # print(ssml)
-    # print()
+
     request = tts.SynthesizeSpeechRequest(
         input=text_input,
         voice=voice_params,
